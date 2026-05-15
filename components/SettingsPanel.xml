@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="SettingsPanel" extends="Group">
+    <interface>
+        <field id="config" type="assocarray" />
+        <field id="settingChanged" type="assocarray" alwaysNotify="true" />
+        <field id="closeRequested" type="bool" alwaysNotify="true" />
+        <field id="resetRequested" type="bool" alwaysNotify="true" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/SettingsPanel.brs" />
+    <children>
+        <Rectangle id="dim" color="0x000000E0" width="1920" height="1080" />
+        <Label id="title" />
+        <Group id="rowsContainer" />
+        <Label id="footer" />
+    </children>
+</component>

@@ -97,12 +97,33 @@ All settings live in `config/config.json`:
 
 ## Remote controls during the slideshow
 
-| Button             | Action          |
-| ------------------ | --------------- |
-| `OK` / `Play/Pause`| Pause / resume  |
-| `▶` / `▶▶`         | Next photo      |
-| `◀` / `◀◀`         | Previous photo  |
-| `Back`             | Exit channel    |
+| Button             | Action                          |
+| ------------------ | ------------------------------- |
+| `OK` / `Play/Pause`| Pause / resume                  |
+| `▶` / `▶▶`         | Next photo                      |
+| `◀` / `◀◀`         | Previous photo                  |
+| `*` (Options/Info) | Open the on-device settings    |
+| `Back`             | Exit channel                    |
+
+## On-device settings
+
+Press the `*` button on the remote to open the settings panel. All effects
+configurable in `config.json` are also tweakable on the TV:
+
+* Slide duration, crossfade duration
+* Ken Burns motion on/off
+* Shuffle on/off
+* Image fit (fill / fit / stretch)
+* Matte width and matte colour (9 presets)
+* Bevel line on/off
+* Caption and clock visibility, clock position, 12/24-hour clock
+* **Reset to defaults** (clears all on-device overrides)
+* **Done** (closes the panel)
+
+Use `Up` / `Down` to navigate, `OK` or `◀ ▶` to cycle a value, and `Back` (or
+`*` again) to close. Every change is applied live and persisted in the Roku's
+per-channel registry — they survive restarts and reinstalls. `config.json`
+remains the authoritative defaults; the registry only stores overrides.
 
 ## Repository layout
 

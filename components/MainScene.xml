@@ -29,6 +29,8 @@
         <Label id="clockLabel" />
         <Label id="statusLabel" />
 
+        <SettingsPanel id="settingsPanel" />
+
         <Timer id="slideTimer" repeat="true" />
         <Timer id="clockTimer" repeat="true" duration="1.0" />
     </children>

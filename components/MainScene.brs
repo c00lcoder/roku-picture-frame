@@ -41,6 +41,11 @@ sub init()
     m.top.setFocus(true)
     showStatus("Loading photos…")
 
+    m.settingsPanel.config = m.config
+    m.settingsPanel.observeField("settingChanged", "onSettingChanged")
+    m.settingsPanel.observeField("closeRequested",  "onSettingsClose")
+    m.settingsPanel.observeField("resetRequested",  "onSettingsReset")
+
     m.manifestTask = CreateObject("roSGNode", "ManifestTask")
     m.manifestTask.url = m.config.manifestUrl
     m.manifestTask.observeField("result", "onManifestResult")
@@ -74,8 +79,52 @@ function loadConfig() as object
     if parsed.captionColor = invalid then parsed.captionColor = "0x303030FF"
     if parsed.clockColor = invalid then parsed.clockColor = "0x303030FF"
 
+    ' Layer on-device overrides (from the Settings panel) over the file defaults.
+    overrides = readRegistry()
+    for each key in overrides
+        parsed[key] = overrides[key]
+    end for
+
     return parsed
 end function
+
+function readRegistry() as object
+    out = {}
+    section = CreateObject("roRegistrySection", "settings")
+    keys = section.GetKeyList()
+    if keys = invalid then return out
+    for each key in keys
+        raw = section.Read(key)
+        if raw = invalid or raw = ""
+            ' skip
+        else
+            parsed = ParseJson(raw)
+            if parsed = invalid
+                out[key] = raw
+            else
+                out[key] = parsed
+            end if
+        end if
+    end for
+    return out
+end function
+
+sub writeRegistry(key as string, value as dynamic)
+    section = CreateObject("roRegistrySection", "settings")
+    section.Write(key, FormatJson(value))
+    section.Flush()
+end sub
+
+sub clearRegistry()
+    section = CreateObject("roRegistrySection", "settings")
+    keys = section.GetKeyList()
+    if keys <> invalid
+        for each key in keys
+            section.Delete(key)
+        end for
+    end if
+    section.Flush()
+end sub
 
 sub cacheNodes()
     m.posterA       = m.top.findNode("posterA")
@@ -98,6 +147,7 @@ sub cacheNodes()
     m.statusLabel   = m.top.findNode("statusLabel")
     m.slideTimer    = m.top.findNode("slideTimer")
     m.clockTimer    = m.top.findNode("clockTimer")
+    m.settingsPanel = m.top.findNode("settingsPanel")
 end sub
 
 sub setupLayout()
@@ -483,7 +533,102 @@ function onKeyEvent(key as string, press as boolean) as boolean
             m.slideTimer.control = "start"
         end if
         return true
+    else if key = "info"
+        openSettings()
+        return true
     end if
 
     return false
 end function
+
+' ----------------------------------------------------------------------------
+' Settings panel
+' ----------------------------------------------------------------------------
+
+sub openSettings()
+    if m.settingsPanel.visible then return
+    m.settingsPanel.visible = true
+    m.settingsPanel.setFocus(true)
+end sub
+
+sub onSettingsClose()
+    m.settingsPanel.visible = false
+    m.top.setFocus(true)
+end sub
+
+sub onSettingChanged()
+    change = m.settingsPanel.settingChanged
+    if change = invalid then return
+    key = change.key
+    if key = invalid or key = "" then return
+    value = change.value
+    m.config[key] = value
+    writeRegistry(key, value)
+    applySetting(key)
+end sub
+
+sub onSettingsReset()
+    clearRegistry()
+    m.config = loadConfig()
+    m.settingsPanel.config = m.config
+    setupLayout()
+    applySetting("kenBurns")
+    applySetting("imageFit")
+    applySetting("showCaption")
+    applySetting("showClock")
+    applySetting("slideDurationSeconds")
+    applySetting("crossfadeDurationSeconds")
+end sub
+
+sub applySetting(key as string)
+    if key = "slideDurationSeconds"
+        m.slideTimer.duration = m.config.slideDurationSeconds
+        if m.kbA <> invalid then m.kbA.duration = m.config.slideDurationSeconds + m.config.crossfadeDurationSeconds + 1
+        if m.kbB <> invalid then m.kbB.duration = m.config.slideDurationSeconds + m.config.crossfadeDurationSeconds + 1
+    else if key = "crossfadeDurationSeconds"
+        m.fadeA.duration = m.config.crossfadeDurationSeconds
+        m.fadeB.duration = m.config.crossfadeDurationSeconds
+        if m.kbA <> invalid then m.kbA.duration = m.config.slideDurationSeconds + m.config.crossfadeDurationSeconds + 1
+        if m.kbB <> invalid then m.kbB.duration = m.config.slideDurationSeconds + m.config.crossfadeDurationSeconds + 1
+    else if key = "kenBurns"
+        if m.config.kenBurns
+            if m.kbA = invalid then m.kbA = buildKenBurnsAnim("posterGroupA")
+            if m.kbB = invalid then m.kbB = buildKenBurnsAnim("posterGroupB")
+        else
+            if m.kbA <> invalid then m.kbA.control = "stop"
+            if m.kbB <> invalid then m.kbB.control = "stop"
+            m.posterGroupA.scale = [1.0, 1.0]
+            m.posterGroupB.scale = [1.0, 1.0]
+            m.posterGroupA.translation = [0, 0]
+            m.posterGroupB.translation = [0, 0]
+        end if
+    else if key = "shuffle"
+        if m.config.shuffle and m.images <> invalid and m.images.Count() > 1
+            shuffleArray(m.images)
+        end if
+    else if key = "imageFit"
+        for each p in [m.posterA, m.posterB]
+            if m.config.imageFit = "fit"
+                p.loadDisplayMode = "scaleToFit"
+            else if m.config.imageFit = "stretch"
+                p.loadDisplayMode = "scaleToFill"
+            else
+                p.loadDisplayMode = "scaleToZoom"
+            end if
+        end for
+    else if key = "matteWidth" or key = "matteColor" or key = "bevelEnabled" or key = "clockPosition"
+        setupLayout()
+    else if key = "showCaption"
+        m.captionLabel.visible = m.config.showCaption
+    else if key = "showClock"
+        m.clockLabel.visible = m.config.showClock
+        if m.config.showClock
+            updateClock()
+            m.clockTimer.control = "start"
+        else
+            m.clockTimer.control = "stop"
+        end if
+    else if key = "use24Hour"
+        updateClock()
+    end if
+end sub
