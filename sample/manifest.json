@@ -1,0 +1,13 @@
+{
+    "title": "Sample Gallery",
+    "images": [
+        { "url": "https://picsum.photos/id/1015/1920/1280", "caption": "River through the mountains" },
+        { "url": "https://picsum.photos/id/1018/1920/1280", "caption": "Alpine valley" },
+        { "url": "https://picsum.photos/id/1019/1920/1280", "caption": "Forest in fog" },
+        { "url": "https://picsum.photos/id/1043/1920/1280", "caption": "Desert dunes" },
+        { "url": "https://picsum.photos/id/1059/1920/1280", "caption": "Snowy peaks" },
+        { "url": "https://picsum.photos/id/1067/1920/1280", "caption": "Coastal cliffs" },
+        { "url": "https://picsum.photos/id/1084/1920/1280", "caption": "Stormy sea" },
+        { "url": "https://picsum.photos/id/1039/1920/1280", "caption": "Highland lake" }
+    ]
+}

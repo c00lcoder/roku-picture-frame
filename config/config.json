@@ -1,0 +1,26 @@
+{
+    "_comment": "Edit manifestUrl to point at your own JSON feed. Out of the box this reads the bundled sample so the app works after a fresh install.",
+
+    "manifestUrl": "pkg:/sample/manifest.json",
+
+    "slideDurationSeconds": 8,
+    "crossfadeDurationSeconds": 1.2,
+    "kenBurns": true,
+    "shuffle": true,
+
+    "imageFit": "fill",
+
+    "matteColor": "0xF2EBDDFF",
+    "matteWidth": 80,
+    "bevelEnabled": true,
+    "bevelColor": "0x000000AA",
+    "backgroundColor": "0x0F0F0FFF",
+
+    "showCaption": true,
+    "captionColor": "0x303030FF",
+
+    "showClock": true,
+    "clockColor": "0x303030FF",
+    "clockPosition": "bottom-right",
+    "use24Hour": false
+}

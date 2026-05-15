@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MainScene" extends="Scene">
+    <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+    <children>
+        <Rectangle id="bgFill" color="0x0F0F0FFF" width="1920" height="1080" />
+
+        <Group id="photoArea">
+            <Group id="posterGroupA" opacity="1.0">
+                <Poster id="posterA" />
+            </Group>
+            <Group id="posterGroupB" opacity="0.0">
+                <Poster id="posterB" />
+            </Group>
+        </Group>
+
+        <Rectangle id="matteTop" />
+        <Rectangle id="matteBottom" />
+        <Rectangle id="matteLeft" />
+        <Rectangle id="matteRight" />
+
+        <Group id="bevel">
+            <Rectangle id="bevelTop" />
+            <Rectangle id="bevelLeft" />
+            <Rectangle id="bevelBottom" />
+            <Rectangle id="bevelRight" />
+        </Group>
+
+        <Label id="captionLabel" />
+        <Label id="clockLabel" />
+        <Label id="statusLabel" />
+
+        <Timer id="slideTimer" repeat="true" />
+        <Timer id="clockTimer" repeat="true" duration="1.0" />
+    </children>
+</component>
